@@ -20,8 +20,6 @@ double timestamp() {
 }
 
 int client(char *addr, int pings) {
-  printf("starting client\n");
-
   struct addrinfo hints, *res;
   int error, client_socket, i;
 
@@ -31,18 +29,18 @@ int client(char *addr, int pings) {
 
   error = getaddrinfo(addr, ECHO_PORT, &hints, &res);
   if(error) {
-    printf("client error: %s\n", gai_strerror(error));
+    fprintf(stderr, "client error: %s\n", gai_strerror(error));
     return -1;
   }
 
   client_socket = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
   if(client_socket < 0) {
-    printf("client error: could not create socket\n");
+    fprintf(stderr, "client error: could not create socket\n");
     return -1;
   }
 
   if(connect(client_socket, res->ai_addr, res->ai_addrlen) < 0) {
-    printf("client error: could not connect: %s\n", strerror(errno));
+    fprintf(stderr, "client error: could not connect: %s\n", strerror(errno));
     return -1;
   }
 
@@ -55,26 +53,23 @@ int client(char *addr, int pings) {
     ssize_t read = recv(client_socket, buf, 8, 0);
 
     if(read == 0) {
-      printf("server exited prematurely\n");
+      fprintf(stderr, "server exited prematurely\n");
       free(buf);
       break;
     }
 
-    // printf("client received '%s'\n", buf);
     free(buf);
 
     double timestamp_after = timestamp();
-    fprintf(stderr, "%i %lf\n", i, timestamp_after - timestamp_before);
+    printf("%i %lf\n", i, timestamp_after - timestamp_before);
   }
-
-  printf("client did %d pings\n", pings);
 
   freeaddrinfo(res);
   return 0;
 }
 
 int usage(int argc, char** argv) {
-  printf("usage: %s <number of pings>\n", argv[0]);
+  fprintf(stderr, "usage: %s <number of pings>\n", argv[0]);
   return -1;
 }
 
