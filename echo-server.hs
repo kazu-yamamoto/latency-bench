@@ -12,7 +12,7 @@ import qualified Network.Socket.ByteString as NBS
 
 main :: IO ()
 main = do
-    putStrLn "server: creating TCP connection"
+    putStrLn "Echo server started."
     serverAddrs <- getAddrInfo
                    (Just (defaultHints { addrFlags = [AI_PASSIVE] } ))
                    Nothing
@@ -23,12 +23,11 @@ main = do
     setSocketOption sock NoDelay 1
     bindSocket sock (addrAddress serverAddr)
 
-    putStrLn "server: awaiting client connection"
     listen sock 5
     (clientSock, _) <- accept sock
 
-    putStrLn "server: listening for pings"
     pong clientSock
+    putStrLn "Echo server finished."
 
 pong :: Socket -> IO ()
 pong sock = do
