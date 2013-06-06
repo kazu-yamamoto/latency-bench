@@ -4,8 +4,8 @@
 
 module Main where
 
+import Control.Concurrent
 import Control.Monad
-
 import qualified Data.ByteString as BS
 import Network.Socket
 import qualified Network.Socket.ByteString as NBS
@@ -26,7 +26,7 @@ main = do
     listen sock 5
     (clientSock, _) <- accept sock
 
-    pong clientSock
+    runInUnboundThread $ pong clientSock
     putStrLn "Echo server finished."
 
 pong :: Socket -> IO ()
