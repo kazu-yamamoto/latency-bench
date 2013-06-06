@@ -14,7 +14,7 @@
 #include "echo.h"
 
 int server() {
-  printf("starting server\n");
+  printf("Echo server started.\n");
 
   struct addrinfo hints, *res;
   int error, server_socket;
@@ -66,6 +66,7 @@ int server() {
     free(buf);
   }
 
+  printf("Echo server finished.\n");
   freeaddrinfo(res);
   return 0;
 }
