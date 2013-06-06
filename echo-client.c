@@ -19,9 +19,9 @@ double timestamp() {
   return ((double) tp.tv_sec) * 1e6 + (double) tp.tv_usec;
 }
 
-int client(int pings) {
+int client(char *addr, int pings) {
   printf("starting client\n");
-  
+
   struct addrinfo hints, *res;
   int error, client_socket, i;
 
@@ -29,7 +29,7 @@ int client(int pings) {
   hints.ai_family   = PF_INET;
   hints.ai_socktype = SOCK_STREAM;
 
-  error = getaddrinfo("127.0.0.1", ECHO_PORT, &hints, &res); 
+  error = getaddrinfo(addr, ECHO_PORT, &hints, &res);
   if(error) {
     printf("client error: %s\n", gai_strerror(error));
     return -1;
@@ -48,7 +48,7 @@ int client(int pings) {
 
   for(i = 0; i < pings; i++) {
     double timestamp_before = timestamp();
-    
+
     send(client_socket, "ping123", 8, 0);
 
     char *buf = malloc(8);
@@ -62,7 +62,7 @@ int client(int pings) {
 
     // printf("client received '%s'\n", buf);
     free(buf);
-    
+
     double timestamp_after = timestamp();
     fprintf(stderr, "%i %lf\n", i, timestamp_after - timestamp_before);
   }
@@ -82,8 +82,6 @@ int
 main(int argc, char** argv) {
   if(argc != 2) {
     return usage(argc, argv);
-  } 
-  int pings = 0;
-  sscanf(argv[1], "%d", &pings);
-  return client(pings);
+  }
+  return client(argv[1],10000);
 }
