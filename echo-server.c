@@ -24,7 +24,7 @@ int server() {
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags    = AI_PASSIVE;
 
-  error = getaddrinfo(NULL, ECHO_PORT, &hints, &res); 
+  error = getaddrinfo(NULL, ECHO_PORT, &hints, &res);
   if(error) {
     printf("server error: %s\n", gai_strerror(error));
     return -1;
@@ -52,7 +52,7 @@ int server() {
   int client_socket;
   struct sockaddr_storage client_addr;
   socklen_t addr_size;
-  client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &addr_size); 
+  client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &addr_size);
 
   for(;;) {
     char* buf = malloc(8);
