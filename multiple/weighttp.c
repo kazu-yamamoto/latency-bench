@@ -8,6 +8,8 @@
  *     MIT, see COPYING file
  */
 
+#define VERSION "X.X.X"
+
 #include "weighttp.h"
 
 extern int optind, optopt; /* getopt */
