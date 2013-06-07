@@ -7,7 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <sys/types.h>
+#include <time.h>
 
 #include "echo.h"
 
@@ -172,4 +174,13 @@ echo(int sock) {
   exit_error(slen, "send()");
 
   return rlen;
+}
+
+////////////////////////////////////////////////////////////////
+
+double
+timestamp() {
+  struct timeval tp;
+  gettimeofday(&tp, NULL);
+  return ((double) tp.tv_sec) * 1e6 + (double) tp.tv_usec;
 }

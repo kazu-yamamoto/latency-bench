@@ -8,3 +8,4 @@ extern void set_nonblock(int);
 extern int ping(int);
 extern int echo(int);
 
+double timestamp(void);

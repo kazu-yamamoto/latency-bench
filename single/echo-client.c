@@ -7,18 +7,8 @@
 #include <unistd.h>
 #include <signal.h>
 #include <errno.h>
-#include <time.h>
-#include <sys/time.h>
-#include <math.h>
 
 #include "echo.h"
-
-double
-timestamp() {
-  struct timeval tp;
-  gettimeofday(&tp, NULL);
-  return ((double) tp.tv_sec) * 1e6 + (double) tp.tv_usec;
-}
 
 int
 client(char *peer, int num) {
