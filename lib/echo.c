@@ -18,24 +18,24 @@ listen_to_echo_port () {
 
   error = getaddrinfo(NULL, ECHO_PORT, &hints, &res);
   if(error) {
-    printf("server error: %s\n", gai_strerror(error));
+    printf("getaddrinfo(): %s\n", gai_strerror(error));
     return -1;
   }
 
   sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
   if(sock < 0) {
-    printf("server error: could not create socket\n");
+    printf("socket()\n");
     return -1;
   }
 
   int yes = 1;
   if(setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) < 0) {
-    printf("server error: could not set socket options\n");
+    printf("setsockopt()\n");
     return -1;
   }
 
   if(bind(sock, res->ai_addr, res->ai_addrlen) < 0) {
-    printf("server error: could not bind to socket\n");
+    printf("bind()\n");
     return -1;
   }
 
@@ -46,11 +46,34 @@ listen_to_echo_port () {
   return sock;
 }
 
-int accept_client(int listen_socket) {
+int
+accept_client(int listen_socket) {
   int sock;
   struct sockaddr_storage client_addr;
   socklen_t addr_size;
 
   sock = accept(listen_socket, (struct sockaddr *)&client_addr, &addr_size);
   return sock;
+}
+
+int
+echo(int sock) {
+  char buf[ECHO_SIZE];
+  size_t len;
+
+  if ((len = recv(sock, buf, ECHO_SIZE, 0)) < 0) {
+    printf("recv()\n");
+    return -1;
+  }
+
+  if (len == 0) {
+    return 0;
+  }
+
+  if (send(sock, buf, len, 0) < 0) {
+    printf("send()\n");
+    return -1;
+  }
+
+  return len;
 }
