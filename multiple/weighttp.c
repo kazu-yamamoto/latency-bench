@@ -12,6 +12,8 @@
 
 #include "weighttp.h"
 
+#include "echo.h"
+
 extern int optind, optopt; /* getopt */
 
 static void show_help(void) {
@@ -76,8 +78,6 @@ static char *forge_request(char *url, char keep_alive, char **host, uint16_t *po
 	char *c, *end;
 	char *req;
 	uint32_t len;
-	uint8_t i;
-	uint8_t have_user_agent;
 	char *header_host;
 
 	*host = NULL;
@@ -134,69 +134,8 @@ static char *forge_request(char *url, char keep_alive, char **host, uint16_t *po
 	if (*url == '\0')
 		url = "/";
 
-	// total request size
-	len = strlen("GET HTTP/1.1\r\nHost: :65536\r\nConnection: keep-alive\r\n\r\n") + 1;
-	len += strlen(*host);
-	len += strlen(url);
-
-	have_user_agent = 0;
-	for (i = 0; i < headers_num; i++) {
-		if (strncmp(headers[i], "Host:", sizeof("Host:")-1) == 0) {
-			if (header_host) {
-				W_ERROR("%s", "Duplicate Host header");
-				free(*host);
-				return NULL;
-			}
-			header_host = headers[i] + 5;
-			if (*header_host == ' ')
-				header_host++;
-
-			if (strlen(header_host) == 0) {
-				W_ERROR("%s", "Invalid Host header");
-				free(*host);
-				return NULL;
-			}
-
-			len += strlen(header_host);
-			continue;
-		}
-		len += strlen(headers[i]) + strlen("\r\n");
-		if (strncmp(headers[i], "User-Agent:", sizeof("User-Agent:")-1) == 0)
-			have_user_agent = 1;
-	}
-
-	if (!have_user_agent)
-		len += strlen("User-Agent: weighttp/" VERSION "\r\n");
-
-	req = W_MALLOC(char, len);
-
-	strcpy(req, "GET ");
-	strcat(req, url);
-	strcat(req, " HTTP/1.1\r\nHost: ");
-	if (header_host) {
-		strcat(req, header_host);
-	} else {
-		strcat(req, *host);
-		if (*port != 80)
-			sprintf(req + strlen(req), ":%"PRIu16, *port);
-	}
-
-	strcat(req, "\r\n");
-
-	if (!have_user_agent)
-		sprintf(req + strlen(req), "User-Agent: weighttp/" VERSION "\r\n");
-
-	for (i = 0; i < headers_num; i++) {
-		if (strncmp(headers[i], "Host:", sizeof("Host:")-1) == 0)
-			continue;
-		strcat(req, headers[i]);
-		strcat(req, "\r\n");
-	}
-
-	if (keep_alive)
-		strcat(req, "Connection: keep-alive\r\n\r\n");
-	else
-		strcat(req, "Connection: close\r\n\r\n");
+	req = W_MALLOC(char, ECHO_SIZE);
+	memcpy(req, ECHO_MSG, ECHO_SIZE);
 
 	return req;
 }
@@ -328,7 +267,7 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	config.request_size = strlen(config.request);
+	config.request_size = ECHO_SIZE;
 	//printf("Request (%d):\n==========\n%s==========\n", config.request_size, config.request);
 	//printf("host: '%s', port: %d\n", host, port);
 
