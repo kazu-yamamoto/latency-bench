@@ -13,9 +13,11 @@ import qualified Network.Socket.ByteString as NBS
 echo :: Socket -> IO ()
 echo sock = do
   bs <- NBS.recv sock ECHO_SIZE
-  when (BS.length bs > 0) $ do
-    void $ NBS.send sock bs
-    echo sock
+  if BS.length bs > 0 then do
+      void $ NBS.send sock bs
+      echo sock
+    else
+      sClose sock
 
 loop :: Socket -> IO ()
 loop listenSock = do
