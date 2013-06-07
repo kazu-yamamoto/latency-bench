@@ -5,7 +5,8 @@
 
 #include "echo.h"
 
-void event_echo(EV_P_ struct ev_io *w, int revents) {
+void
+event_echo(EV_P_ struct ev_io *w, int revents) {
   if (echo(w->fd) <= 0) {
     close(w->fd);
     ev_io_stop(EV_A_ w);
@@ -13,7 +14,8 @@ void event_echo(EV_P_ struct ev_io *w, int revents) {
   }
 }
 
-void event_server(EV_P_ struct ev_io *w, int revents) {
+void
+event_server(EV_P_ struct ev_io *w, int revents) {
   int sock = accept_client(w->fd);
   set_nonblock(sock);
 
