@@ -1,6 +1,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
+#include <netinet/tcp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -75,6 +76,13 @@ set_reuseaddr(int sock) {
 }
 
 void
+set_nodelay(int sock) {
+  int on = 1;
+  int ret = setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &on, sizeof(on));
+  exit_error(ret, "setsockopt NODELAY");
+}
+
+void
 set_nonblock(int sock) {
   int flags = fcntl(sock, F_GETFL);
   int ret = fcntl(sock, F_SETFL, (flags | O_NONBLOCK));
@@ -95,10 +103,11 @@ listen_to_echo_port () {
 ////////////////////////////////////////////////////////////////
 
 int
-accept_client(int sock) {
-  int ssock= accept(sock, NULL, NULL);
-  exit_error(ssock, "accept");
-  return ssock;
+accept_client(int listen_socket) {
+  int sock = accept(listen_socket, NULL, NULL);
+  exit_error(sock, "accept");
+  set_nodelay(sock);
+  return sock;
 }
 
 ////////////////////////////////////////////////////////////////
