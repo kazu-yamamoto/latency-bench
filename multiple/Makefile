@@ -14,7 +14,7 @@ echo-server: echo-server.o
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 echo-client: $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS) -lpthread
 
 echo-nonthreaded-server: echo-server.hs
 	$(HC) $(HCFLAGS) -o $@ $<
