@@ -35,27 +35,35 @@ struct addrinfo *
 get_my_addr(char *port) {
   struct addrinfo hints, *addr;
   memset(&hints, 0, sizeof(hints));
-  hints.ai_flags = AI_PASSIVE;
-  hints.ai_family = AF_INET6;
+  hints.ai_family   = AF_INET;
   hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags    = AI_PASSIVE;
   int ret = getaddrinfo(NULL, port, &hints, &addr);
   exit_gai_error(ret);
   return addr;
 }
 
+struct addrinfo*
+get_peer_addr(char *addr, char *port) {
+  struct addrinfo hints, *res;
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_family   = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
+  int ret = getaddrinfo(addr, port, &hints, &res);
+  exit_gai_error(ret);
+  return res;
+}
+
+////////////////////////////////////////////////////////////////
+
 int
-get_server_socket(struct addrinfo *addr) {
+get_socket(struct addrinfo *addr) {
   int sock = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
   exit_error(sock, "socket");
   return sock;
 }
 
-int
-get_socket() {
-  int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-  exit_error(sock, "socket");
-  return sock;
-}
+////////////////////////////////////////////////////////////////
 
 void
 bind_socket(int sock, struct addrinfo *addr) {
@@ -68,6 +76,8 @@ listen_socket(int sock, int qlen) {
   int ret = listen(sock, qlen);
   exit_error(ret, "socket");
 }
+
+////////////////////////////////////////////////////////////////
 
 void
 set_reuseaddr(int sock) {
@@ -90,18 +100,18 @@ set_nonblock(int sock) {
   exit_error(ret, "NONBLOCK");
 }
 
+////////////////////////////////////////////////////////////////
+
 int
-listen_to_echo_port () {
-  struct addrinfo *addr = get_my_addr(ECHO_PORT);
-  int sock = get_server_socket(addr);
+listen_to (char *port) {
+  struct addrinfo *addr = get_my_addr(port);
+  int sock = get_socket(addr);
   set_reuseaddr(sock);
   bind_socket(sock, addr);
   listen_socket(sock, MAX_BACKLOG);
   freeaddrinfo(addr);
   return sock;
 }
-
-////////////////////////////////////////////////////////////////
 
 int
 accept_client(int listen_socket) {
@@ -110,6 +120,8 @@ accept_client(int listen_socket) {
   set_nodelay(sock);
   return sock;
 }
+
+////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////
 

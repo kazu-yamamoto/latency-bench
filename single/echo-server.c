@@ -3,7 +3,7 @@
 #include "echo.h"
 
 int server() {
-  int listen_socket = listen_to_echo_port();
+  int listen_socket = listen_to(ECHO_PORT);
   int sock = accept_client(listen_socket);
 
   for(;;) {

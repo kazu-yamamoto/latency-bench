@@ -27,7 +27,7 @@ event_server(EV_P_ struct ev_io *w, int revents) {
 
 int
 server() {
-  int listen_socket = listen_to_echo_port();
+  int listen_socket = listen_to(ECHO_PORT);
   set_nonblock(listen_socket);
 
   struct ev_loop *loop = ev_default_loop(0);
