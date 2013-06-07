@@ -44,14 +44,14 @@ get_my_addr(char *port) {
 }
 
 struct addrinfo*
-get_peer_addr(char *addr, char *port) {
-  struct addrinfo hints, *res;
+get_peer_addr(char *peer, char *port) {
+  struct addrinfo hints, *addr;
   memset(&hints, 0, sizeof(hints));
   hints.ai_family   = AF_INET;
   hints.ai_socktype = SOCK_STREAM;
-  int ret = getaddrinfo(addr, port, &hints, &res);
+  int ret = getaddrinfo(peer, port, &hints, &addr);
   exit_gai_error(ret);
-  return res;
+  return addr;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -123,20 +123,52 @@ accept_client(int listen_socket) {
 
 ////////////////////////////////////////////////////////////////
 
+int
+connect_addr(int sock, struct addrinfo *addr) {
+  int ret = connect(sock, addr->ai_addr, addr->ai_addrlen);
+  exit_error(ret, "socket");
+  return ret;
+}
+
 ////////////////////////////////////////////////////////////////
+
+int
+connect_peer(char *peer, char *port) {
+  struct addrinfo *addr = get_peer_addr(peer, port);
+  int sock = get_socket(addr);
+  connect_addr(sock, addr);
+  set_nodelay(sock);
+  freeaddrinfo(addr);
+  return sock;
+}
+
+////////////////////////////////////////////////////////////////
+
+int
+ping(int sock) {
+  char buf[ECHO_SIZE];
+
+  ssize_t slen = send(sock, ECHO_MSG, ECHO_SIZE, 0);
+  exit_error(slen, "send()");
+
+  ssize_t rlen = recv(sock, buf, ECHO_SIZE, 0);
+  exit_error(rlen, "recv()");
+
+  return rlen;
+}
 
 int
 echo(int sock) {
   char buf[ECHO_SIZE];
 
-  size_t rlen = recv(sock, buf, ECHO_SIZE, 0);
+  ssize_t rlen = recv(sock, buf, ECHO_SIZE, 0);
   exit_error(rlen, "recv()");
 
   if (rlen == 0) {
     return 0;
   }
 
-  size_t slen = send(sock, buf, rlen, 0);
+  ssize_t slen = send(sock, buf, rlen, 0);
   exit_error(slen, "send()");
 
   return rlen;
