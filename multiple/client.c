@@ -254,10 +254,8 @@ void client_state_machine(Client *client) {
 					} else {
 						if (client->state == CLIENT_END)
 							goto start;
-						else {
-							client->state = CLIENT_END;
-							goto start;
-						}
+						else
+							return;
 					}
 				} else {
 					/* disconnect */
@@ -316,6 +314,7 @@ void client_state_machine(Client *client) {
 
 static uint8_t client_parse(Client *client, int size) {
   client->worker->stats.req_2xx++;
+  client->state = CLIENT_END;
   client->status_success = 1;
   return 1;
 }
