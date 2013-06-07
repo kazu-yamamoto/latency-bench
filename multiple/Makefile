@@ -17,10 +17,10 @@ echo-client: $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS) -lpthread
 
 echo-nonthreaded-server: echo-server.hs
-	$(HC) $(HCFLAGS) -o $@ $<
+	$(HC) $(HCFLAGS) -rtsopts -o $@ $<
 
 echo-threaded-server: echo-server.hs
-	$(HC) $(HCFLAGS) -threaded -o $@ $<
+	$(HC) $(HCFLAGS) -rtsopts -threaded -o $@ $<
 
 clean:
 	rm -f $(PROGS) *.o *.hi
