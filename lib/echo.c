@@ -18,7 +18,7 @@ exit_error(int ret, char *msg) {
     exit(EXIT_FAILURE);
   }
 }
- 
+
 void
 exit_gai_error(int ret) {
   if (ret != 0) {
@@ -40,14 +40,14 @@ get_my_addr(char *port) {
   exit_gai_error(ret);
   return addr;
 }
- 
+
 int
 get_server_socket(struct addrinfo *addr) {
   int sock = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
   exit_error(sock, "socket");
   return sock;
 }
- 
+
 int
 get_socket() {
   int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
@@ -60,7 +60,7 @@ bind_socket(int sock, struct addrinfo *addr) {
   int ret = bind(sock, addr->ai_addr, addr->ai_addrlen);
   exit_error(ret, "bind");
 }
- 
+
 void
 listen_socket(int sock, int qlen) {
   int ret = listen(sock, qlen);
