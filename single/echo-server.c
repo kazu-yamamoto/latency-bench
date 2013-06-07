@@ -6,10 +6,8 @@ int server() {
   int listen_socket = listen_to(ECHO_PORT);
   int sock = accept_client(listen_socket);
 
-  for(;;) {
-    if (echo(sock) <= 0) {
-      break;
-    }
+  for (;;) {
+    if (echo(sock) == 0) { break; }
   }
   return 0;
 }
