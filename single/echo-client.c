@@ -78,7 +78,9 @@ main(int argc, char** argv) {
   if(argc != 3) {
     return usage(argc, argv);
   }
+  char *addr = argv[1];
+  char *num = argv[2];
   int pings = 0;
-  sscanf(argv[1], "%d", &pings);
-  return client(argv[1],pings);
+  sscanf(num, "%d", &pings);
+  return client(addr, pings);
 }
