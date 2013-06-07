@@ -69,14 +69,16 @@ int client(char *addr, int pings) {
 }
 
 int usage(int argc, char** argv) {
-  fprintf(stderr, "usage: %s <number of pings>\n", argv[0]);
+  fprintf(stderr, "usage: %s <server_addr> <#_of_pings>\n", argv[0]);
   return -1;
 }
 
 int
 main(int argc, char** argv) {
-  if(argc != 2) {
+  if(argc != 3) {
     return usage(argc, argv);
   }
-  return client(argv[1],10000);
+  int pings = 0;
+  sscanf(argv[1], "%d", &pings);
+  return client(argv[1],pings);
 }
