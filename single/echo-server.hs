@@ -1,6 +1,6 @@
 {-# LANGUAGE CPP, BangPatterns #-}
 
-#include "echo.h"
+#include "echodef.h"
 
 module Main where
 
