@@ -10,7 +10,7 @@ HCFLAGS=-O -Wall -I../lib
 
 all: $(PROGS)
 
-eecho-server: echo-server.o
+echo-server: echo-server.o
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 echo-client: $(OBJS)
