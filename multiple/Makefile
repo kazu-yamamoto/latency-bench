@@ -1,5 +1,5 @@
-PROGS=echo-server echo-nonthreaded-server echo-threaded-server
-#PROGS=echo-server echo-client echo-nonthreaded-server echo-threaded-server
+PROGS=echo-server echo-client echo-nonthreaded-server echo-threaded-server
+OBJS=weighttp.o worker.o client.o
 
 CC=gcc
 CFLAGS=-Wall
@@ -10,11 +10,11 @@ HCFLAGS=-O -Wall -I../lib
 
 all: $(PROGS)
 
-echo-server: echo-server.c
-	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(CPPFLAGS)
+eecho-server: echo-server.o
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
-# echo-client: echo-client.c
-# 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(CPPFLAGS)
+echo-client: $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
 echo-nonthreaded-server: echo-server.hs
 	$(HC) $(HCFLAGS) -o $@ $<
@@ -24,3 +24,6 @@ echo-threaded-server: echo-server.hs
 
 clean:
 	rm -f $(PROGS) *.o *.hi
+
+.c.o:
+	$(CC) $(CFLAGS) -c $< $(CPPFLAGS)
