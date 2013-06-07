@@ -3,7 +3,7 @@ PROGS=echo-server echo-client echo-nonthreaded-server echo-threaded-server
 CC=gcc
 CFLAGS=-Wall
 HC=ghc
-HCFLAGS=-O
+HCFLAGS=-O -Wall
 
 all: $(PROGS)
 
