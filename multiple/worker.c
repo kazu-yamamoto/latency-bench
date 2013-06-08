@@ -59,6 +59,10 @@ void *worker_thread(void* arg) {
 			client_state_machine(worker->clients[i]);
 	}
 
+	/* A worker does its job very soon. So, let's wait until
+	   other works are spawn. */
+	sleep(1);
+
 	ev_loop(worker->loop, 0);
 
 	ev_loop_destroy(worker->loop);
