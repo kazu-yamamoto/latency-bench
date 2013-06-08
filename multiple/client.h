@@ -42,8 +42,11 @@ struct Client {
 	uint16_t header_size;
 
 	char buffer[CLIENT_BUFFER_SIZE];
+	uint32_t latency_count;
+	uint32_t latency_stat_max;
+	double *latency_stat;
 };
 
-Client *client_new(Worker *worker);
+Client *client_new(Worker *worker, uint32_t);
 void client_free(Client *client);
 void client_state_machine(Client *client);

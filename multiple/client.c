@@ -9,6 +9,7 @@
  */
 
 #include "weighttp.h"
+#include "echo.h"
 
 static uint8_t client_parse(Client *client, int size);
 static void client_io_cb(struct ev_loop *loop, ev_io *w, int revents);
@@ -54,7 +55,7 @@ static void client_set_events(Client *client, int events) {
 	ev_io_start(loop, watcher);
 }
 
-Client *client_new(Worker *worker) {
+Client *client_new(Worker *worker, uint32_t max) {
 	Client *client;
 
 	client = W_MALLOC(Client, 1);
@@ -69,6 +70,10 @@ Client *client_new(Worker *worker) {
 	client->chunked = 0;
 	client->chunk_size = -1;
 	client->chunk_received = 0;
+	client->latency_count = 0;
+	client->latency_stat_max = max;
+	client->latency_stat = W_MALLOC(double, max);
+	memset((void *)client->latency_stat, 0, max * sizeof(double));
 
 	return client;
 }
@@ -80,6 +85,7 @@ void client_free(Client *client) {
 		close(client->sock_watcher.fd);
 	}
 
+	free(client->latency_stat);
 	free(client);
 }
 
@@ -212,6 +218,7 @@ void client_state_machine(Client *client) {
 					client->request_offset += r;
 					if (client->request_offset == config->request_size) {
 						/* whole request was sent, start reading */
+									client->latency_stat[client->latency_count] = timestamp();
 						client->state = CLIENT_READING;
 						client_set_events(client, EV_READ);
 					}
@@ -252,9 +259,15 @@ void client_state_machine(Client *client) {
 						//printf("parser failed\n");
 						break;
 					} else {
-						if (client->state == CLIENT_END)
+						if (client->state == CLIENT_END) {
+							client->latency_stat[client->latency_count] = timestamp() - client->latency_stat[client->latency_count];
+							client->latency_count++;
+							if (client->latency_count >= client->latency_stat_max) {
+							  fprintf(stderr,"HERE!\n"); 
+exit(0);
+}
 							goto start;
-						else
+						} else
 							return;
 					}
 				} else {
@@ -290,7 +303,7 @@ void client_state_machine(Client *client) {
 
 			/* print progress every 10% done */
 			if (client->worker->id == 1 && client->worker->stats.req_done % client->worker->progress_interval == 0) {
-				printf("progress: %3d%% done\n",
+				fprintf(stderr,"progress: %3d%% done\n",
 					(int) (client->worker->stats.req_done * 100 / client->worker->stats.req_todo)
 				);
 			}

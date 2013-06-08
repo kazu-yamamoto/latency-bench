@@ -176,7 +176,7 @@ int main(int argc, char *argv[]) {
 	char **headers;
 	uint8_t headers_num;
 
-	printf("weighttp - a lightweight and simple webserver benchmarking tool\n\n");
+	//	printf("weighttp - a lightweight and simple webserver benchmarking tool\n\n");
 
 	headers = NULL;
 	headers_num = 0;
@@ -283,7 +283,7 @@ int main(int argc, char *argv[]) {
 	rest_concur = config.concur_count % config.thread_count;
 	rest_req = config.req_count % config.thread_count;
 
-	printf("starting benchmark...\n");
+	fprintf(stderr,"starting benchmark...\n");
 
 	memset(&stats, 0, sizeof(stats));
 	ts_start = ev_time();
@@ -306,7 +306,7 @@ int main(int argc, char *argv[]) {
 			reqs += diff;
 			rest_req -= diff;
 		}
-		printf("spawning thread #%d: %"PRIu16" concurrent requests, %"PRIu64" total requests\n", i+1, concur, reqs);
+		fprintf(stderr,"spawning thread #%d: %"PRIu16" concurrent requests, %"PRIu64" total requests\n", i+1, concur, reqs);
 		workers[i] = worker_new(i+1, &config, concur, reqs);
 
 		if (!(workers[i])) {
@@ -322,6 +322,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
+	int lat_count = 0;
 	for (i = 0; i < config.thread_count; i++) {
 		err = pthread_join(threads[i], NULL);
 		worker = workers[i];
@@ -342,9 +343,19 @@ int main(int argc, char *argv[]) {
 		stats.req_4xx += worker->stats.req_4xx;
 		stats.req_5xx += worker->stats.req_5xx;
 
+		int cc, j;
+		Client *client;
+		for (cc=0; cc < worker->num_clients; cc++) {
+		  client = worker->clients[cc];
+		  for(j=0; j < client->latency_count; j++) {
+		    printf("%i %lf\n", lat_count, client->latency_stat[j]);
+		    lat_count++;
+		  }
+		}
+
 		worker_free(worker);
 	}
-
+	/*
 	ts_end = ev_time();
 	duration = ts_end - ts_start;
 	sec = duration;
@@ -365,7 +376,7 @@ int main(int argc, char *argv[]) {
 	printf("traffic: %"PRIu64" bytes total, %"PRIu64" bytes http, %"PRIu64" bytes data\n",
 		stats.bytes_total,  stats.bytes_total - stats.bytes_body, stats.bytes_body
 	);
-
+	*/
 	ev_default_destroy();
 
 	free(threads);

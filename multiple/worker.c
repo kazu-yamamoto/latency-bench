@@ -28,8 +28,11 @@ Worker *worker_new(uint8_t id, Config *config, uint16_t num_clients, uint64_t nu
 
 	worker->clients = W_MALLOC(Client*, num_clients);
 
+	//	uint32_t max = (num_requests / num_clients) * 2;
+	uint32_t max = num_requests;
+
 	for (i = 0; i < num_clients; i++) {
-		if (NULL == (worker->clients[i] = client_new(worker)))
+		if (NULL == (worker->clients[i] = client_new(worker, max)))
 			return NULL;
 	}
 
