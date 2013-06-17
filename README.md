@@ -64,6 +64,8 @@ echo-client is based on weighttp.
 - -t: the number of worker native threads
 - -k: using persistent connection
 
+echo-client sends 8 byte pings, not HTTP requests.
+
 ## Credits
 
 Most parts are copied from:
