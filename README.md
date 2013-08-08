@@ -25,8 +25,8 @@ variants, type:
 There are three echo servers:
 
 - echo-server: written in C
-- echo-threaded-seerver: written in Haskell with the threaded RTS
-- echo-nonthreaded-seerver: written in Haskell with the nonthreaded RTS
+- echo-threaded-server: written in Haskell with the threaded RTS
+- echo-nonthreaded-server: written in Haskell with the nonthreaded RTS
 
 Echo servers uses 8001 port.
 
@@ -47,8 +47,8 @@ The last argument is the number of ping. echo-client send 8byte pings.
 There are three echo servers:
 
 - echo-server: written in C
-- echo-threaded-seerver: written in Haskell with the threaded RTS
-- echo-nonthreaded-seerver: written in Haskell with the nonthreaded RTS
+- echo-threaded-server: written in Haskell with the threaded RTS
+- echo-nonthreaded-server: written in Haskell with the nonthreaded RTS
 
 Echo servers uses 8001 port.
 
